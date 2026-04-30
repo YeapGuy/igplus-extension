@@ -206,6 +206,12 @@
   "lock_pw_copy": {
     "message": "Copy"
   },
+  "lock_pw_copied": {
+    "message": "Copied!"
+  },
+  "lock_wrong_password": {
+    "message": "Incorrect password. Try again."
+  },
   "lock_pw_done": {
     "message": "Done"
   }

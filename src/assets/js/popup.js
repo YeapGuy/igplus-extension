@@ -24,12 +24,41 @@
       // Session-level unlock state (resets when popup closes)
       let sessionUnlocked = false;
 
-      // Generate a 32-character random alphanumeric password
+      // Generate a 32-character random alphanumeric password using rejection sampling
       function generateLockPassword() {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        const array = new Uint8Array(32);
-        crypto.getRandomValues(array);
-        return Array.from(array, (b) => chars[b % chars.length]).join("");
+        const charsLen = chars.length; // 62
+        const maxValid = 256 - (256 % charsLen); // 248 — avoids modulo bias
+        let result = "";
+        while (result.length < 32) {
+          const array = new Uint8Array(32);
+          crypto.getRandomValues(array);
+          for (let i = 0; i < array.length && result.length < 32; i++) {
+            if (array[i] < maxValid) {
+              result += chars[array[i] % charsLen];
+            }
+          }
+        }
+        return result;
+      }
+
+      // Hash a password with SHA-256, returning a hex string
+      async function hashPassword(password) {
+        const data = new TextEncoder().encode(password);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        return Array.from(new Uint8Array(hashBuffer))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      // Constant-time string comparison to prevent timing attacks
+      function safeEqual(a, b) {
+        if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+        let diff = 0;
+        for (let i = 0; i < a.length; i++) {
+          diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+        }
+        return diff === 0;
       }
 
       // Lock screen: submit handler
@@ -38,14 +67,17 @@
       const lockError = document.getElementById("lock_error");
 
       lockSubmitBtn.addEventListener("click", () => {
-        chrome.storage.local.get("formState", (result) => {
-          if (lockPasswordInput.value === result.formState?.lockPassword) {
+        chrome.storage.local.get("formState", async (result) => {
+          const storedHash = result.formState?.lockPasswordHash;
+          if (!storedHash) return;
+          const inputHash = await hashPassword(lockPasswordInput.value);
+          if (safeEqual(inputHash, storedHash)) {
             sessionUnlocked = true;
             document.body.classList.remove("settings_locked");
-            lockError.textContent = "";
+            lockError.classList.remove("lock_error_visible");
             lockPasswordInput.value = "";
           } else {
-            lockError.textContent = "Incorrect password. Try again.";
+            lockError.classList.add("lock_error_visible");
           }
         });
       });
@@ -61,11 +93,13 @@
 
       lockPwCopyBtn.addEventListener("click", () => {
         navigator.clipboard.writeText(lockPwValue.textContent).then(() => {
-          lockPwCopyBtn.textContent = "Copied!";
+          const copyWrap = document.getElementById("lock_pw_copy_wrap");
+          copyWrap.classList.add("lock_pw_copy_done");
           setTimeout(() => {
-            lockPwCopyBtn.setAttribute("data-i18n", "lock_pw_copy");
-            lockPwCopyBtn.textContent = "Copy";
+            copyWrap.classList.remove("lock_pw_copy_done");
           }, 2000);
+        }).catch(() => {
+          lockPwValue.select?.();
         });
       });
 
@@ -185,20 +219,22 @@
 
             if (action === "lock_settings") {
               if (!state["lockEnabled"]) {
-                // Enable lock: generate password, store it, show it to user
+                // Enable lock: generate password, store its hash, show plaintext once to user
                 const password = generateLockPassword();
-                state["lockEnabled"] = true;
-                state["lockPassword"] = password;
-                sessionUnlocked = true;
-                chrome.storage.local.set({ formState: state }, () => {
-                  dispatchFormStateChangeEvent();
-                  lockPwValue.textContent = password;
-                  document.body.classList.add("show_lock_password");
+                hashPassword(password).then((hash) => {
+                  state["lockEnabled"] = true;
+                  state["lockPasswordHash"] = hash;
+                  sessionUnlocked = true;
+                  chrome.storage.local.set({ formState: state }, () => {
+                    dispatchFormStateChangeEvent();
+                    lockPwValue.textContent = password;
+                    document.body.classList.add("show_lock_password");
+                  });
                 });
               } else if (sessionUnlocked) {
                 // Disable lock (only allowed when already unlocked for this session)
                 state["lockEnabled"] = false;
-                state["lockPassword"] = "";
+                state["lockPasswordHash"] = "";
                 sessionUnlocked = false;
                 chrome.storage.local.set({ formState: state }, () => {
                   dispatchFormStateChangeEvent();

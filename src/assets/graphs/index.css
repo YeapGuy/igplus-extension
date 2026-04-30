@@ -402,6 +402,10 @@ html[lang="hi"] body {
   background-image: var(--power-ic);
 }
 
+[data-action="dark_mode"] {
+  background-image: var(--theme-ic);
+}
+
 [data-action="lock_settings"] {
   background-image: var(--lock-ic);
 }
@@ -653,6 +657,11 @@ body.show_lock_password .lock_screen {
   font-size: 0.76rem;
   color: #e05a5a;
   min-height: 1em;
+  display: none;
+}
+
+.lock_error.lock_error_visible {
+  display: block;
 }
 
 .lock_pw_subtitle {
@@ -707,7 +716,25 @@ body.show_lock_password .lock_screen {
   color: var(--background);
 }
 
+#lock_pw_copy_wrap {
+  flex-shrink: 0;
+  position: relative;
+}
 
+#lock_pw_copied {
+  display: none;
+  font-size: 0.76rem;
+  color: var(--color-active);
+}
+
+#lock_pw_copy_wrap.lock_pw_copy_done #lock_pw_copy {
+  display: none;
+}
+
+#lock_pw_copy_wrap.lock_pw_copy_done #lock_pw_copied {
+  display: inline;
+}
+body.disabled #l3_settings {
   display: none;
 }
 

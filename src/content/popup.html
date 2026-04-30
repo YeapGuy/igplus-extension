@@ -180,10 +180,12 @@
       </svg>
       <span data-i18n="lock_title">Settings are locked</span>
       <div class="lock_input_wrap">
-        <input type="text" id="lock_password_input" placeholder="Enter 32-character password" autocomplete="off" maxlength="32" spellcheck="false" />
+        <input type="password" id="lock_password_input" placeholder="Enter 32-character password" autocomplete="off" maxlength="32" spellcheck="false" />
         <button id="lock_submit_btn" data-i18n="lock_unlock">Unlock</button>
       </div>
-      <span class="lock_error" id="lock_error"></span>
+      <span class="lock_error" id="lock_error">
+        <span data-i18n="lock_wrong_password">Incorrect password. Try again.</span>
+      </span>
     </div>
 
     <div class="lock_pw_display" id="lock_pw_display">
@@ -194,7 +196,10 @@
       <p class="lock_pw_subtitle" data-i18n="lock_pw_subtitle">Copy and save your password — you will need it to change settings.</p>
       <div class="lock_pw_wrap">
         <code id="lock_pw_value"></code>
-        <button id="lock_pw_copy" data-i18n="lock_pw_copy">Copy</button>
+        <span id="lock_pw_copy_wrap">
+          <button id="lock_pw_copy" data-i18n="lock_pw_copy">Copy</button>
+          <span id="lock_pw_copied" data-i18n="lock_pw_copied">Copied!</span>
+        </span>
       </div>
       <button id="lock_pw_close" data-i18n="lock_pw_done">Done</button>
     </div>
