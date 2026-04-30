@@ -190,5 +190,23 @@
   },
   "mi_18": {
     "message": "Hide Threads Button"
+  },
+  "lock_title": {
+    "message": "Settings are locked"
+  },
+  "lock_unlock": {
+    "message": "Unlock"
+  },
+  "lock_pw_title": {
+    "message": "Settings lock enabled"
+  },
+  "lock_pw_subtitle": {
+    "message": "Copy and save your password — you will need it to change settings."
+  },
+  "lock_pw_copy": {
+    "message": "Copy"
+  },
+  "lock_pw_done": {
+    "message": "Done"
   }
 }

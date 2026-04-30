@@ -21,6 +21,7 @@
     <nav class="header_nav" id="header_nav">
       <button class="btn_header" data-action="disabled">Disable plugin</button>
       <button class="btn_header" data-action="dark_mode">Dark mode</button>
+      <button class="btn_header" data-action="lock_settings" id="lock_btn">Lock settings</button>
       <select class="btn_header lang_set emojiesfix" name="lang_set" id="lang_set">
         <option value="en">English</option>
         <option value="de">German - Deutsch</option>
@@ -171,6 +172,31 @@
           d="M12 13q-.425 0-.713-.288T11 12V4q0-.425.288-.713T12 3q.425 0 .713.288T13 4v8q0 .425-.288.713T12 13Zm0 8q-1.875 0-3.513-.713t-2.85-1.924q-1.212-1.213-1.924-2.85T3 12q0-1.725.625-3.3t1.8-2.85q.275-.3.7-.3t.725.3q.275.275.25.688t-.3.737q-.875.975-1.337 2.188T5 12q0 2.925 2.038 4.963T12 19q2.925 0 4.963-2.038T19 12q0-1.325-.475-2.563t-1.35-2.212q-.275-.3-.288-.7t.263-.675q.3-.3.725-.3t.7.3q1.175 1.275 1.8 2.85T21 12q0 1.875-.713 3.513t-1.924 2.85q-1.213 1.212-2.85 1.925T12 21Z" />
       </svg>
       <span data-i18n="disabled">You turned off IGPlus</span>
+    </div>
+
+    <div class="lock_screen" id="lock_screen">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 17a2 2 0 0 0 2-2a2 2 0 0 0-2-2a2 2 0 0 0-2 2a2 2 0 0 0 2 2m6-9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h1V6a5 5 0 0 1 5-5a5 5 0 0 1 5 5v2h1m-6-5a3 3 0 0 0-3 3v2h6V6a3 3 0 0 0-3-3z" />
+      </svg>
+      <span data-i18n="lock_title">Settings are locked</span>
+      <div class="lock_input_wrap">
+        <input type="text" id="lock_password_input" placeholder="Enter 32-character password" autocomplete="off" maxlength="32" spellcheck="false" />
+        <button id="lock_submit_btn" data-i18n="lock_unlock">Unlock</button>
+      </div>
+      <span class="lock_error" id="lock_error"></span>
+    </div>
+
+    <div class="lock_pw_display" id="lock_pw_display">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 17a2 2 0 0 0 2-2a2 2 0 0 0-2-2a2 2 0 0 0-2 2a2 2 0 0 0 2 2m6-9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h1V6a5 5 0 0 1 5-5a5 5 0 0 1 5 5v2h1m-6-5a3 3 0 0 0-3 3v2h6V6a3 3 0 0 0-3-3z" />
+      </svg>
+      <span data-i18n="lock_pw_title">Settings lock enabled</span>
+      <p class="lock_pw_subtitle" data-i18n="lock_pw_subtitle">Copy and save your password — you will need it to change settings.</p>
+      <div class="lock_pw_wrap">
+        <code id="lock_pw_value"></code>
+        <button id="lock_pw_copy" data-i18n="lock_pw_copy">Copy</button>
+      </div>
+      <button id="lock_pw_close" data-i18n="lock_pw_done">Done</button>
     </div>
   </section>
   <footer>
